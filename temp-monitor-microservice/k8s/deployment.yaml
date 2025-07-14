@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: temp-monitor-microservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: temp-monitor-microservice
+  template:
+    metadata:
+      labels:
+        app: temp-monitor-microservice
+    spec:
+      containers:
+        - name: temp-monitor-microservice
+          image: stefangolubov/temp-monitor-microservice:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DATABASE_URL
+              value: postgresql://postgres:secret@my-postgres-postgresql.default.svc.cluster.local:5432/temp_monitor_db
