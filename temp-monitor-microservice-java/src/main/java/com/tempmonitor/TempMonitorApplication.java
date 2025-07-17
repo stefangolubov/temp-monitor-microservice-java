@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class TempMonitorMicroserviceJavaApplication {
+public class TempMonitorApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(TempMonitorMicroserviceJavaApplication.class, args);
+		SpringApplication.run(TempMonitorApplication.class, args);
 	}
 
 }
