@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: temp-monitor-microservice-java
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: temp-monitor-microservice-java
+  template:
+    metadata:
+      labels:
+        app: temp-monitor-microservice-java
+    spec:
+      containers:
+        - name: temp-monitor-microservice-java
+          image: stefangolubov/temp-monitor-microservice-java:latest
+          ports:
+            - containerPort: 9000
+          env:
+            - name: DATABASE_URL
+              value: jdbc:postgresql://my-postgres-postgresql.default.svc.cluster.local:5432/temp_monitor_db
+            - name: DB_USERNAME
+              value: postgres
+            - name: DB_PASSWORD
+              value: secret

@@ -1,0 +1,100 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: stefangolubov
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          - tableExists:
+              tableName: locations
+      changes:
+        - createTable:
+            tableName: locations
+            columns:
+              - column:
+                  name: id
+                  type: SERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    unique: true
+                    nullable: false
+
+  - changeSet:
+      id: 2
+      author: stefangolubov
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          - tableExists:
+              tableName: thermometers
+      changes:
+        - createTable:
+            tableName: thermometers
+            columns:
+              - column:
+                  name: id
+                  type: SERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: location_id
+                  type: INT
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            constraintName: fk_thermometers_location_id
+            baseTableName: thermometers
+            baseColumnNames: location_id
+            referencedTableName: locations
+            referencedColumnNames: id
+
+  - changeSet:
+      id: 3
+      author: stefangolubov
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          - tableExists:
+              tableName: temperature_readings
+      changes:
+        - createTable:
+            tableName: temperature_readings
+            columns:
+              - column:
+                  name: id
+                  type: SERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: thermometer_id
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: timestamp
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: value
+                  type: FLOAT8
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            constraintName: fk_temperature_readings_thermometer_id
+            baseTableName: temperature_readings
+            baseColumnNames: thermometer_id
+            referencedTableName: thermometers
+            referencedColumnNames: id
