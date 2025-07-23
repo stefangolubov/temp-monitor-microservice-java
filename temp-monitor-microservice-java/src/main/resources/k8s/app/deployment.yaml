@@ -11,10 +11,14 @@ spec:
     metadata:
       labels:
         app: temp-monitor-microservice-java
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "9000"
     spec:
       containers:
         - name: temp-monitor-microservice-java
-          image: stefangolubov/temp-monitor-microservice-java:latest
+          image: stefangolubov/temp-monitor-microservice-java:v1.0.0
           ports:
             - containerPort: 9000
           env:
@@ -24,3 +28,12 @@ spec:
               value: postgres
             - name: DB_PASSWORD
               value: secret
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+              ephemeral-storage: "512Mi"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+              ephemeral-storage: "1Gi"

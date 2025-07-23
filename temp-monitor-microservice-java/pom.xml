@@ -22,6 +22,7 @@
         <commons-lang3.version>3.18.0</commons-lang3.version>
         <commons-compress.version>1.27.1</commons-compress.version>
         <testcontainers.version>1.19.8</testcontainers.version>
+        <micrometer-registry-prometheus.version>1.15.2</micrometer-registry-prometheus.version>
     </properties>
     <dependencies>
         <dependency>
@@ -97,6 +98,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-testcontainers</artifactId>
             <scope>test</scope>
+        </dependency>
+        <!--Monitoring-->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+            <version>${micrometer-registry-prometheus.version}</version>
         </dependency>
     </dependencies>
     <build>
