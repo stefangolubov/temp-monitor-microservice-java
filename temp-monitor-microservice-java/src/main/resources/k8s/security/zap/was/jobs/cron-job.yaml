@@ -1,0 +1,55 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: tmmj-zap-scheduled-scan
+spec:
+  schedule: "0 2 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 7
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 300
+      template:
+        spec:
+          securityContext:
+            fsGroup: 1001
+          containers:
+            - name: zap-was-scanner
+              image: zaproxy/zap-stable:latest
+              securityContext:
+                runAsUser: 1000
+                runAsGroup: 1001
+              command: ["sh", "-c"]
+              args:
+                - |
+                  mkdir -p /zap/wrk/zap && \
+                  zap-api-scan.py -t http://temp-monitor-microservice-java.default.svc.cluster.local:80/api-docs \
+                  -f openapi \
+                  -r "/zap/wrk/zap/tmmj-scheduled-$(date +%Y%m%d-%H%M).html" \
+                  -J "/zap/wrk/zap/tmmj-scheduled-$(date +%Y%m%d-%H%M).json" \
+                  -d -I \
+                  -z "-config connection.timeoutInSecs=120"
+              env:
+                - name: ZAP_JVM_OPTIONS
+                  value: "-Xmx3072m -XX:ParallelGCThreads=2"
+              resources:
+                limits:
+                  memory: "4Gi"
+                  cpu: "2"
+                requests:
+                  memory: "3Gi"
+                  cpu: "1"
+              volumeMounts:
+                - name: reports
+                  mountPath: /zap/wrk
+                - name: tmmj-zap-scripts
+                  mountPath: /zap/scripts
+          volumes:
+            - name: reports
+              persistentVolumeClaim:
+                claimName: reports-pvc
+            - name: tmmj-zap-scripts
+              configMap:
+                name: tmmj-zap-scripts
+          restartPolicy: Never
