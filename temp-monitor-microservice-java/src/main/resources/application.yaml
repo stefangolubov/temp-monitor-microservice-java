@@ -30,3 +30,10 @@ springdoc:
     path: /api-docs
   swagger-ui:
     path: /docs
+
+logging:
+  level:
+    root: INFO
+    com.tempmonitor: DEBUG
+  file:
+    name: logs/app.log
