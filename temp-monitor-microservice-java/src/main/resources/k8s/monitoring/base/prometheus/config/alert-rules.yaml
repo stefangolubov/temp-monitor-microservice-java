@@ -1,0 +1,19 @@
+groups:
+  - name: main.rules
+    rules:
+      - alert: HostHighCpuLoad
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100 ) > 15
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          description: "CPU Load is over 50%\n Value = {{ $value }}\n Instance = {{ $labels.instance }} \n"
+          summary: "Host CPU load high"
+      - alert: K8sPodCrashLooping
+        expr: kube_pod_container_status_restarts_total > 1
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          description: "Pod {{ $labels.pod }} is crash looping \n Value = {{ $value }}"
+          summary: "Kubernetes pod crash looping"
