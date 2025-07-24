@@ -24,15 +24,6 @@ scrape_configs:
         target_label: __address__
         regex: (.+):(?:\d+);(\d+)
         replacement: $1:$2
-  - job_name: 'kube-state-metrics'
-    kubernetes_sd_configs:
-      - role: pod
-    relabel_configs:
-      - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
-        action: keep
-        regex: kube-state-metrics
-      - action: labelmap
-        regex: __meta_kubernetes_pod_label_(.+)
   - job_name: 'prometheus'
     scrape_interval: 5s
     static_configs:
@@ -44,3 +35,6 @@ scrape_configs:
       - targets: [ 'temp-monitor-microservice-java.default.svc:80' ]
         labels:
           application: 'Temperature Monitor Microservice Java'
+  - job_name: 'kube-state-metrics'
+    static_configs:
+      - targets: [ 'kube-state-metrics.monitoring.svc:8080' ]

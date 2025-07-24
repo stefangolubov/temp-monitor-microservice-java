@@ -7,6 +7,9 @@ resources:
   - rbac.yaml
   - service.yaml
   - serviceaccount.yaml
+  - kubestatemetricsdeployment.yaml
+  - kubestatemetricsrbac.yaml
+  - kubestatemetricsservice.yaml
 
 configMapGenerator:
   - name: prometheus-config
