@@ -27,34 +27,34 @@ public class TempMonitorService {
     private final TemperatureReadingRepository readingRepo;
 
     public List<LocationDto> getLocations() {
-        return locationRepo.findAll().stream().map(this::toDto).toList();
+        return locationRepo.findAll().stream().map(DtoFactory::createLocationDto).toList();
     }
 
     public LocationDto getLocation(Integer id) {
         Location loc = locationRepo.findById(id).orElseThrow(() -> new NoSuchElementException(LOCATION_NOT_FOUND));
-        return toDto(loc);
+        return DtoFactory.createLocationDto(loc);
     }
 
     public LocationDto createLocation(String name) {
         Location loc = Location.builder().name(name).build();
-        return toDto(locationRepo.save(loc));
+        return DtoFactory.createLocationDto(locationRepo.save(loc));
     }
 
     public List<ThermometerDto> getThermometers(Integer locationId) {
         List<Thermometer> therms = (locationId == null) ? thermometerRepo.findAll()
                 : thermometerRepo.findByLocation(locationRepo.getReferenceById(locationId));
-        return therms.stream().map(this::toDto).toList();
+        return therms.stream().map(DtoFactory::createThermometerDto).toList();
     }
 
     public ThermometerDto getThermometer(Integer id) {
         Thermometer therm = thermometerRepo.findById(id).orElseThrow(() -> new NoSuchElementException(THERMOMETER_NOT_FOUND));
-        return toDto(therm);
+        return DtoFactory.createThermometerDto(therm);
     }
 
     public ThermometerDto createThermometer(String name, Integer locationId) {
         Location loc = locationRepo.findById(locationId).orElseThrow(() -> new NoSuchElementException(LOCATION_NOT_FOUND));
         Thermometer therm = Thermometer.builder().name(name).location(loc).build();
-        return toDto(thermometerRepo.save(therm));
+        return DtoFactory.createThermometerDto(thermometerRepo.save(therm));
     }
 
     public TemperatureReadingDto addReading(TemperatureReadingCreateDto dto) {
@@ -64,16 +64,16 @@ public class TempMonitorService {
                 .value(dto.getValue())
                 .timestamp(Instant.now())
                 .build();
-        return toDto(readingRepo.save(tr));
+        return DtoFactory.createTemperatureReadingDto(readingRepo.save(tr));
     }
 
     public List<TemperatureReadingDto> getLatestReadings() {
-        return readingRepo.findLatestForAllThermometers().stream().map(this::toDto).toList();
+        return readingRepo.findLatestForAllThermometers().stream().map(DtoFactory::createTemperatureReadingDto).toList();
     }
 
     public List<TemperatureReadingDto> getReadingsForThermometer(Integer thermometerId, int limit) {
         Thermometer therm = thermometerRepo.findById(thermometerId).orElseThrow(() -> new NoSuchElementException(THERMOMETER_NOT_FOUND));
-        return readingRepo.findTop10ByThermometerOrderByTimestampDesc(therm).stream().limit(limit).map(this::toDto).toList();
+        return readingRepo.findTop10ByThermometerOrderByTimestampDesc(therm).stream().limit(limit).map(DtoFactory::createTemperatureReadingDto).toList();
     }
 
     public ThermometerStatsDto getThermometerStats(Integer thermometerId) {
@@ -119,29 +119,5 @@ public class TempMonitorService {
                 createThermometer(locName + " Thermometer " + tnum, loc.getId());
             }
         }
-    }
-
-    private LocationDto toDto(Location loc) {
-        LocationDto dto = new LocationDto();
-        dto.setId(loc.getId());
-        dto.setName(loc.getName());
-        return dto;
-    }
-
-    private ThermometerDto toDto(Thermometer t) {
-        ThermometerDto dto = new ThermometerDto();
-        dto.setId(t.getId());
-        dto.setName(t.getName());
-        dto.setLocationId(t.getLocation().getId());
-        return dto;
-    }
-
-    private TemperatureReadingDto toDto(TemperatureReading tr) {
-        TemperatureReadingDto dto = new TemperatureReadingDto();
-        dto.setId(tr.getId());
-        dto.setThermometerId(tr.getThermometer().getId());
-        dto.setValue(tr.getValue());
-        dto.setTimestamp(tr.getTimestamp());
-        return dto;
     }
 }
