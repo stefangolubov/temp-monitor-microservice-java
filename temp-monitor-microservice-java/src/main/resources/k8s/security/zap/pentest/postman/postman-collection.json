@@ -1,0 +1,424 @@
+{
+	"info": {
+		"_postman_id": "temp-monitor-microservice-java-pentest",
+		"name": "Temp Monitor Microservice Java - Vulnerability Test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "POST /api/readings - Valid & Attacks",
+			"item": [
+				{
+					"name": "Valid Reading",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"url": {
+							"raw": "http://temp-monitor-microservice-java:80/api/readings",
+							"protocol": "http",
+							"host": ["temp-monitor-microservice-java"],
+							"port": "80",
+							"path": ["api", "readings"]
+						},
+						"body": {
+							"mode": "raw",
+							"raw": "{ \"thermometerId\": 1, \"value\": 22.5 }"
+						}
+					}
+				},
+				{
+					"name": "SQLi in thermometerId",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"url": {
+							"raw": "http://temp-monitor-microservice-java:80/api/readings",
+							"protocol": "http",
+							"host": ["temp-monitor-microservice-java"],
+							"port": "80",
+							"path": ["api", "readings"]
+						},
+						"body": {
+							"mode": "raw",
+							"raw": "{ \"thermometerId\": \"1 OR 1=1\", \"value\": 22.5 }"
+						}
+					}
+				},
+				{
+					"name": "XSS in value",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"url": {
+							"raw": "http://temp-monitor-microservice-java:80/api/readings",
+							"protocol": "http",
+							"host": ["temp-monitor-microservice-java"],
+							"port": "80",
+							"path": ["api", "readings"]
+						},
+						"body": {
+							"mode": "raw",
+							"raw": "{ \"thermometerId\": 1, \"value\": \"<script>alert(1)</script>\" }"
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "POST /api/init-demo-data",
+			"request": {
+				"method": "POST",
+				"url": {
+					"raw": "http://temp-monitor-microservice-java:80/api/init-demo-data",
+					"protocol": "http",
+					"host": ["temp-monitor-microservice-java"],
+					"port": "80",
+					"path": ["api", "init-demo-data"]
+				}
+			}
+		},
+		{
+			"name": "GET /api/thermometers - Fuzz locationId",
+			"item": [
+				{
+					"name": "No locationId",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "http://temp-monitor-microservice-java:80/api/thermometers",
+							"protocol": "http",
+							"host": ["temp-monitor-microservice-java"],
+							"port": "80",
+							"path": ["api", "thermometers"]
+						}
+					}
+				},
+				{
+					"name": "locationId=1",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "http://temp-monitor-microservice-java:80/api/thermometers?locationId=1",
+							"protocol": "http",
+							"host": ["temp-monitor-microservice-java"],
+							"port": "80",
+							"path": ["api", "thermometers"],
+							"query": [
+								{ "key": "locationId", "value": "1" }
+							]
+						}
+					}
+				},
+				{
+					"name": "SQLi locationId",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "http://temp-monitor-microservice-java:80/api/thermometers?locationId=1' OR '1'='1",
+							"protocol": "http",
+							"host": ["temp-monitor-microservice-java"],
+							"port": "80",
+							"path": ["api", "thermometers"],
+							"query": [
+								{ "key": "locationId", "value": "1' OR '1'='1" }
+							]
+						}
+					}
+				},
+				{
+					"name": "XSS locationId",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "http://temp-monitor-microservice-java:80/api/thermometers?locationId=<img src=x onerror=alert(1)>",
+							"protocol": "http",
+							"host": ["temp-monitor-microservice-java"],
+							"port": "80",
+							"path": ["api", "thermometers"],
+							"query": [
+								{ "key": "locationId", "value": "<img src=x onerror=alert(1)>" }
+							]
+						}
+					}
+				},
+				{
+					"name": "Command injection locationId",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "http://temp-monitor-microservice-java:80/api/thermometers?locationId=1;ls",
+							"protocol": "http",
+							"host": ["temp-monitor-microservice-java"],
+							"port": "80",
+							"path": ["api", "thermometers"],
+							"query": [
+								{ "key": "locationId", "value": "1;ls" }
+							]
+						}
+					}
+				},
+				{
+					"name": "Path traversal locationId",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "http://temp-monitor-microservice-java:80/api/thermometers?locationId=../../../../etc/passwd",
+							"protocol": "http",
+							"host": ["temp-monitor-microservice-java"],
+							"port": "80",
+							"path": ["api", "thermometers"],
+							"query": [
+								{ "key": "locationId", "value": "../../../../etc/passwd" }
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "GET /api/thermometers/{thermometerId} - Fuzz thermometerId",
+			"item": [
+				{
+					"name": "thermometerId=1",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "http://temp-monitor-microservice-java:80/api/thermometers/1",
+							"protocol": "http",
+							"host": ["temp-monitor-microservice-java"],
+							"port": "80",
+							"path": ["api", "thermometers", "1"]
+						}
+					}
+				},
+				{
+					"name": "SQLi thermometerId",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "http://temp-monitor-microservice-java:80/api/thermometers/1' OR '1'='1",
+							"protocol": "http",
+							"host": ["temp-monitor-microservice-java"],
+							"port": "80",
+							"path": ["api", "thermometers", "1' OR '1'='1"]
+						}
+					}
+				},
+				{
+					"name": "XSS thermometerId",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "http://temp-monitor-microservice-java:80/api/thermometers/<script>alert(1)</script>",
+							"protocol": "http",
+							"host": ["temp-monitor-microservice-java"],
+							"port": "80",
+							"path": ["api", "thermometers", "<script>alert(1)</script>"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "GET /api/stats/thermometer/{thermometerId}",
+			"item": [
+				{
+					"name": "thermometerId=1",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "http://temp-monitor-microservice-java:80/api/stats/thermometer/1",
+							"protocol": "http",
+							"host": ["temp-monitor-microservice-java"],
+							"port": "80",
+							"path": ["api", "stats", "thermometer", "1"]
+						}
+					}
+				},
+				{
+					"name": "SQLi thermometerId",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "http://temp-monitor-microservice-java:80/api/stats/thermometer/1' OR '1'='1",
+							"protocol": "http",
+							"host": ["temp-monitor-microservice-java"],
+							"port": "80",
+							"path": ["api", "stats", "thermometer", "1' OR '1'='1"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "GET /api/stats/location/{locationId}",
+			"item": [
+				{
+					"name": "locationId=1",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "http://temp-monitor-microservice-java:80/api/stats/location/1",
+							"protocol": "http",
+							"host": ["temp-monitor-microservice-java"],
+							"port": "80",
+							"path": ["api", "stats", "location", "1"]
+						}
+					}
+				},
+				{
+					"name": "SQLi locationId",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "http://temp-monitor-microservice-java:80/api/stats/location/1' OR '1'='1",
+							"protocol": "http",
+							"host": ["temp-monitor-microservice-java"],
+							"port": "80",
+							"path": ["api", "stats", "location", "1' OR '1'='1"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "GET /api/readings/{thermometerId} - Fuzz thermometerId & limit",
+			"item": [
+				{
+					"name": "thermometerId=1, default limit",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "http://temp-monitor-microservice-java:80/api/readings/1",
+							"protocol": "http",
+							"host": ["temp-monitor-microservice-java"],
+							"port": "80",
+							"path": ["api", "readings", "1"]
+						}
+					}
+				},
+				{
+					"name": "thermometerId=1, limit=5",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "http://temp-monitor-microservice-java:80/api/readings/1?limit=5",
+							"protocol": "http",
+							"host": ["temp-monitor-microservice-java"],
+							"port": "80",
+							"path": ["api", "readings", "1"],
+							"query": [
+								{ "key": "limit", "value": "5" }
+							]
+						}
+					}
+				},
+				{
+					"name": "SQLi thermometerId",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "http://temp-monitor-microservice-java:80/api/readings/1' OR '1'='1",
+							"protocol": "http",
+							"host": ["temp-monitor-microservice-java"],
+							"port": "80",
+							"path": ["api", "readings", "1' OR '1'='1"]
+						}
+					}
+				},
+				{
+					"name": "SQLi limit",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "http://temp-monitor-microservice-java:80/api/readings/1?limit=1 OR 1=1",
+							"protocol": "http",
+							"host": ["temp-monitor-microservice-java"],
+							"port": "80",
+							"path": ["api", "readings", "1"],
+							"query": [
+								{ "key": "limit", "value": "1 OR 1=1" }
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "GET /api/readings/latest",
+			"request": {
+				"method": "GET",
+				"url": {
+					"raw": "http://temp-monitor-microservice-java:80/api/readings/latest",
+					"protocol": "http",
+					"host": ["temp-monitor-microservice-java"],
+					"port": "80",
+					"path": ["api", "readings", "latest"]
+				}
+			}
+		},
+		{
+			"name": "GET /api/locations",
+			"request": {
+				"method": "GET",
+				"url": {
+					"raw": "http://temp-monitor-microservice-java:80/api/locations",
+					"protocol": "http",
+					"host": ["temp-monitor-microservice-java"],
+					"port": "80",
+					"path": ["api", "locations"]
+				}
+			}
+		},
+		{
+			"name": "GET /api/locations/{locationId} - Fuzz locationId",
+			"item": [
+				{
+					"name": "locationId=1",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "http://temp-monitor-microservice-java:80/api/locations/1",
+							"protocol": "http",
+							"host": ["temp-monitor-microservice-java"],
+							"port": "80",
+							"path": ["api", "locations", "1"]
+						}
+					}
+				},
+				{
+					"name": "SQLi locationId",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "http://temp-monitor-microservice-java:80/api/locations/1' OR '1'='1",
+							"protocol": "http",
+							"host": ["temp-monitor-microservice-java"],
+							"port": "80",
+							"path": ["api", "locations", "1' OR '1'='1"]
+						}
+					}
+				},
+				{
+					"name": "XSS locationId",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "http://temp-monitor-microservice-java:80/api/locations/<script>alert(1)</script>",
+							"protocol": "http",
+							"host": ["temp-monitor-microservice-java"],
+							"port": "80",
+							"path": ["api", "locations", "<script>alert(1)</script>"]
+						}
+					}
+				}
+			]
+		}
+	]
+}

@@ -3,5 +3,5 @@ kind: Kustomization
 
 resources:
   - app/
-  - monitoring/
-  - was/
+  - monitoring/base/
+  - security/zap/was/

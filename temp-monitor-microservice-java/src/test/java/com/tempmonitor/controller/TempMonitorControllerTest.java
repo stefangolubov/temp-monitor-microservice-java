@@ -34,7 +34,7 @@ class TempMonitorControllerTest {
     @Test
     void testInitDemoData() throws Exception {
         doNothing().when(service).initDemoData();
-        mockMvc.perform(post("/init-demo-data"))
+        mockMvc.perform(post("/api/init-demo-data"))
                 .andExpect(status().isOk())
                 .andExpect(content().json("{\"message\": \"Demo data created\"}"));
         verify(service).initDemoData();
@@ -46,7 +46,7 @@ class TempMonitorControllerTest {
         dto.setId(1);
         dto.setName("Room1");
         when(service.getLocations()).thenReturn(List.of(dto));
-        mockMvc.perform(get("/locations"))
+        mockMvc.perform(get("/api/locations"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[0].name").value("Room1"));
@@ -58,7 +58,7 @@ class TempMonitorControllerTest {
         dto.setId(1);
         dto.setName("Room1");
         when(service.getLocation(1)).thenReturn(dto);
-        mockMvc.perform(get("/locations/1"))
+        mockMvc.perform(get("/api/locations/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value("Room1"));
@@ -71,7 +71,7 @@ class TempMonitorControllerTest {
         dto.setName("Thermo1");
         dto.setLocationId(1);
         when(service.getThermometers(null)).thenReturn(List.of(dto));
-        mockMvc.perform(get("/thermometers"))
+        mockMvc.perform(get("/api/thermometers"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(2));
     }
@@ -83,7 +83,7 @@ class TempMonitorControllerTest {
         dto.setName("Thermo1");
         dto.setLocationId(1);
         when(service.getThermometer(2)).thenReturn(dto);
-        mockMvc.perform(get("/thermometers/2"))
+        mockMvc.perform(get("/api/thermometers/2"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(2));
     }
@@ -99,7 +99,7 @@ class TempMonitorControllerTest {
         dto.setValue(23.5);
         dto.setTimestamp(Instant.now());
         when(service.addReading(any())).thenReturn(dto);
-        mockMvc.perform(post("/readings")
+        mockMvc.perform(post("/api/readings")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(createDto)))
                 .andExpect(status().isOk())
@@ -116,7 +116,7 @@ class TempMonitorControllerTest {
         dto.setValue(18.0);
         dto.setTimestamp(Instant.now());
         when(service.getLatestReadings()).thenReturn(List.of(dto));
-        mockMvc.perform(get("/readings/latest"))
+        mockMvc.perform(get("/api/readings/latest"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(4))
                 .andExpect(jsonPath("$[0].value").value(18.0));
@@ -130,7 +130,7 @@ class TempMonitorControllerTest {
         dto.setValue(20.1);
         dto.setTimestamp(Instant.now());
         when(service.getReadingsForThermometer(3, 10)).thenReturn(List.of(dto));
-        mockMvc.perform(get("/readings/3?limit=10"))
+        mockMvc.perform(get("/api/readings/3?limit=10"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(5))
                 .andExpect(jsonPath("$[0].value").value(20.1));
@@ -145,7 +145,7 @@ class TempMonitorControllerTest {
         dto.setAvg(20.0);
         dto.setCount(5L);
         when(service.getThermometerStats(2)).thenReturn(dto);
-        mockMvc.perform(get("/stats/thermometer/2"))
+        mockMvc.perform(get("/api/stats/thermometer/2"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.thermometerId").value(2))
                 .andExpect(jsonPath("$.min").value(10.0))
@@ -163,7 +163,7 @@ class TempMonitorControllerTest {
         dto.setAvg(17.0);
         dto.setCount(12L);
         when(service.getLocationStats(1)).thenReturn(dto);
-        mockMvc.perform(get("/stats/location/1"))
+        mockMvc.perform(get("/api/stats/location/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.locationId").value(1))
                 .andExpect(jsonPath("$.min").value(9.0))
@@ -175,20 +175,20 @@ class TempMonitorControllerTest {
     @Test
     void testGetLocation_notFound_returns404() throws Exception {
         when(service.getLocation(404)).thenThrow(new NoSuchElementException("Location not found"));
-        mockMvc.perform(get("/locations/404"))
+        mockMvc.perform(get("/api/locations/404"))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     void testGetThermometer_notFound_returns404() throws Exception {
         when(service.getThermometer(123)).thenThrow(new NoSuchElementException("Thermometer not found"));
-        mockMvc.perform(get("/thermometers/123"))
+        mockMvc.perform(get("/api/thermometers/123"))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     void testAddReading_invalidPayload_returns400() throws Exception {
-        mockMvc.perform(post("/readings")
+        mockMvc.perform(post("/api/readings")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}"))
                 .andExpect(status().isBadRequest());
@@ -201,7 +201,7 @@ class TempMonitorControllerTest {
         createDto.setValue(35.2);
         when(service.addReading(any())).thenThrow(new NoSuchElementException("Thermometer not found"));
 
-        mockMvc.perform(post("/readings")
+        mockMvc.perform(post("/api/readings")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(createDto)))
                 .andExpect(status().isNotFound());
@@ -210,21 +210,21 @@ class TempMonitorControllerTest {
     @Test
     void testGetReadingsForThermometer_notFound_returns404() throws Exception {
         when(service.getReadingsForThermometer(999, 10)).thenThrow(new NoSuchElementException("Thermometer not found"));
-        mockMvc.perform(get("/readings/999?limit=10"))
+        mockMvc.perform(get("/api/readings/999?limit=10"))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     void testStatsForThermometer_notFound_returns404() throws Exception {
         when(service.getThermometerStats(101)).thenThrow(new NoSuchElementException("Thermometer not found"));
-        mockMvc.perform(get("/stats/thermometer/101"))
+        mockMvc.perform(get("/api/stats/thermometer/101"))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     void testStatsForLocation_notFound_returns404() throws Exception {
         when(service.getLocationStats(202)).thenThrow(new NoSuchElementException("Location not found"));
-        mockMvc.perform(get("/stats/location/202"))
+        mockMvc.perform(get("/api/stats/location/202"))
                 .andExpect(status().isNotFound());
     }
 }

@@ -64,11 +64,11 @@ class TempMonitorIntegrationTest {
         Location loc = Location.builder().name("Lab").build();
         loc = locationRepository.save(loc);
 
-        mockMvc.perform(get("/locations"))
+        mockMvc.perform(get("/api/locations"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].name").value("Lab"));
 
-        mockMvc.perform(get("/locations/" + loc.getId()))
+        mockMvc.perform(get("/api/locations/" + loc.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Lab"));
     }
@@ -79,11 +79,11 @@ class TempMonitorIntegrationTest {
         Thermometer th = Thermometer.builder().name("TH1").location(loc).build();
         th = thermometerRepository.save(th);
 
-        mockMvc.perform(get("/thermometers"))
+        mockMvc.perform(get("/api/thermometers"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].name").value("TH1"));
 
-        mockMvc.perform(get("/thermometers/" + th.getId()))
+        mockMvc.perform(get("/api/thermometers/" + th.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("TH1"));
     }
