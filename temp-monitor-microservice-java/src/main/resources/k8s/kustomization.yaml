@@ -5,3 +5,5 @@ resources:
   - app/
   - monitoring/base/
   - security/zap/was/
+  - security/zap/pentest/zap-pentest-job.yaml
+  - newman/newman-collection-job.yaml
