@@ -89,6 +89,5 @@ public class TempMonitorController {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public void handleNotFound() {
         log.warn("Resource not found, returning 404");
-        // Returns 404 - Not Found with no body
     }
 }
