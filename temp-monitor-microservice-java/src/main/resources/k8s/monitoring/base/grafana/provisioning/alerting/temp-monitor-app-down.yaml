@@ -1,0 +1,32 @@
+apiVersion: 1
+groups:
+  - orgId: 1
+    name: temp-monitor-group
+    folder: "Spring Boot Alerts"
+    interval: 1m
+    rules:
+      - uid: temp-monitor-app-down
+        title: Temp Monitor App Down
+        condition: A
+        for: 1m
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 60
+              to: 0
+            datasourceUid: prometheus
+            model:
+              refId: A
+              expr: sum(kube_pod_container_status_running{container="temp-monitor-microservice-java", namespace="default"}) OR on() vector(0)
+              interval: ""
+              format: time_series
+              instant: true
+              datasource:
+                type: prometheus
+                uid: prometheus
+              editorMode: code
+        labels:
+          severity: critical
+        annotations:
+          summary: "Temp Monitor App Down"
+          description: "No running containers found for deployment 'temp-monitor-microservice-java'."

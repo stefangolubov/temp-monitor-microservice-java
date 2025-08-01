@@ -9,11 +9,11 @@ groups:
         annotations:
           description: "CPU Load is over 50%\n Value = {{ $value }}\n Instance = {{ $labels.instance }} \n"
           summary: "Host CPU load high"
-      - alert: K8sPodCrashLooping
-        expr: kube_pod_container_status_restarts_total > 1
-        for: 0m
+      - alert: TempMonitorAppDown
+        expr: sum(kube_pod_container_status_running{container="temp-monitor-microservice-java", namespace="default"}) OR on() vector(0)
+        for: 1m
         labels:
           severity: critical
         annotations:
-          description: "Pod {{ $labels.pod }} is crash looping \n Value = {{ $value }}"
-          summary: "Kubernetes pod crash looping"
+          summary: "Temp Monitor App Down"
+          description: "No running containers found for deployment 'temp-monitor-microservice-java'."

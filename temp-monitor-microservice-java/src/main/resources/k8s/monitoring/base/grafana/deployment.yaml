@@ -68,6 +68,9 @@ spec:
             - name: grafana-provisioning-datasources
               mountPath: /etc/grafana/provisioning/datasources
               readOnly: true
+            - name: grafana-provisioning-alert-rules
+              mountPath: /etc/grafana/provisioning/alerting
+              readOnly: true
       volumes:
         - name: grafana-storage
           persistentVolumeClaim:
@@ -81,3 +84,6 @@ spec:
         - name: grafana-provisioning-datasources
           configMap:
             name: grafana-provisioning-datasources
+        - name: grafana-provisioning-alert-rules
+          configMap:
+            name: grafana-provisioning-alert-rules

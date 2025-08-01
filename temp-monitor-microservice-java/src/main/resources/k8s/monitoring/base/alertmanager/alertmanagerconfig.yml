@@ -12,10 +12,11 @@ spec:
       - matchers:
           - name: alertname
             value: HostHighCpuLoad
+        repeatInterval: 2m
       - matchers:
           - name: alertname
-            value: K8sPodCrashLooping
-        repeatInterval: 10m
+            value: TempMonitorAppDown
+        repeatInterval: 1m
   receivers:
     - name: 'email'
       emailConfigs:
